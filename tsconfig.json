@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "target": "es2020",         // Compile to ECMAScript 2020 (compatible with Vercel's Node.js runtime)
+      "module": "esnext",         // Use ES module syntax (import/export)
+      "moduleResolution": "node", // Resolve modules using Node.js resolution strategy
+      "esModuleInterop": true,    // Allow default imports from modules with no default export
+      "strict": true,             // Enable all strict type-checking options (highly recommended for TS)
+      "skipLibCheck": true,       // Skip type checking of declaration files (e.g. from node_modules)
+      "forceConsistentCasingInFileNames": true, // Ensure consistent file naming
+      "outDir": "./dist",         // Output compiled JS files to a 'dist' directory (Vercel handles this)
+      "rootDir": "./",            // Root directory for source files
+      "noEmit": true              // Don't emit output, Vercel's build process handles compilation.
+                                  // If you want to run `npm run build` locally, set this to false.
+    },
+    "include": [
+      "api/**/*.ts"               // Include all .ts files in the 'api' directory
+    ],
+    "exclude": [
+      "node_modules"              // Exclude node_modules
+    ]
+  }
