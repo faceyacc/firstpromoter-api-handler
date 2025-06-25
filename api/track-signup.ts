@@ -89,3 +89,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
     if (axios.isAxiosError(error)) {
       // This is an Axios error (e.g., network error, or API responded with non-2xx status)
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Error calling FirstPromoter API (Axios response):", error.response.data);
+        errorMessage = error.response.data?.message || JSON.stringify(error.response.data);
+        statusCode = error.response.status;
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("Error calling FirstPromoter API (Axios request): No response received.", error.message);
+        errorMessage = "No response from FirstPromoter API.";
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error calling FirstPromoter API (Axios config):", error.message);
+        errorMessage = `Request setup error: ${error.message}`;
+      }
+    } else if (error instanceof Error) {
+      // A generic JavaScript error
+      console.error("Generic Error calling FirstPromoter API:", error.message);
+      errorMessage = error.message;
+    } else {
+      // Any other unexpected error type
+      console.error("Unknown Error calling FirstPromoter API:", error);
+    }
+
+    res.status(statusCode).json({
+      success: false,
+      message: "Failed to track signup with FirstPromoter.",
+      error: errorMessage,
+    });
+  }
+}
