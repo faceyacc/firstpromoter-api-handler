@@ -14,7 +14,8 @@ interface FirstPromoterSignupParams {
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   // 1. Ensure it's a POST request
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed', error: 'Only POST requests are supported.' });
+    res.status(405).json({ message: 'Method Not Allowed', error: 'Only POST requests are supported.' });
+    return;
   }
 
   // 2. Retrieve the _fprom_tid cookie
@@ -28,12 +29,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   // 4. Basic Validation
   if (!tid) {
     console.error("Error: Missing _fprom_tid cookie in request.");
-    return res.status(400).json({ message: 'Bad Request', error: 'Missing _fprom_tid cookie. Ensure your frontend sends cookies.' });
+    res.status(400).json({ message: 'Bad Request', error: 'Missing _fprom_tid cookie. Ensure your frontend sends cookies.' });
+    return;
   }
   if (!email && !uid) {
     console.error("Error: Missing email or uid in request body.");
-    return res.status(400).json({ message: 'Bad Request', error: 'Missing email or uid in request body.' });
+    res.status(400).json({ message: 'Bad Request', error: 'Missing email or uid in request body.' });
+    return;
   }
+  // Remove the extra '}' here. It was closing the 'handler' function prematurely.
+  // } <--- THIS IS THE CULPRIT! REMOVE IT!
+
 
   // 5. SECURELY GET YOUR API KEY AND ACCOUNT ID FROM VERCEL ENVIRONMENT VARIABLES
   // THIS IS THE ONLY PLACE THESE SENSITIVE VALUES SHOULD BE ACCESSED.
@@ -43,7 +49,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   // Crucial check: ensure the environment variables are actually set
   if (!FIRSTPROMOTER_API_TOKEN || !FIRSTPROMOTER_ACCOUNT_ID) {
     console.error("Server Configuration Error: FirstPromoter API credentials (FIRSTPROMOTER_API_TOKEN or FIRSTPROMOTER_ACCOUNT_ID) are not set as Vercel environment variables.");
-    return res.status(500).json({ message: "Internal Server Error", error: "API credentials missing. Please configure them in your Vercel project settings." });
+    res.status(500).json({ message: "Internal Server Error", error: "API credentials missing. Please configure them in your Vercel project settings." });
+    return; // Added return here to ensure function exits after sending response
   }
 
   // 6. Prepare parameters for the FirstPromoter API
